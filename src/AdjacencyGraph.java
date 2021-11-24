@@ -22,13 +22,15 @@ public class AdjacencyGraph {
     public void MSTPrims() {
         MinHeap<Vertex> Q = new MinHeap<>();
 
-        if (vertices.size() > 0)
-            vertices.get(0).Distance = 0;
+
 
         for (int i = 0; i < vertices.size(); i++) {
             Q.Insert(vertices.get(i));
-
+            vertices.get(i).Distance = Integer.MAX_VALUE;
+            vertices.get(i).Predecessor = null;
         }
+        if (vertices.size() > 0)
+            vertices.get(0).Distance = 0;
         int MST = 0;
         System.out.println("MST order\n");
         while (!Q.isEmpty()) {
@@ -38,14 +40,18 @@ public class AdjacencyGraph {
                 Vertex v = u.getOutEdges().get(i).getTo();
 
                 if (u.getOutEdges().get(i).getWeight()<v.Distance){
-                    v.Distance = u.getOutEdges().get(i).getWeight();
-                    v.Predecessor = u;
-                    int pos = Q.getPosition(v);
-                    Q.decreasekey(pos);
+                    if(!v.explored){
+                        v.Distance = u.getOutEdges().get(i).getWeight();
+                        v.Predecessor = u;
+                        int pos = Q.getPosition(v);
+                        Q.decreasekey(pos);
+
+                    }
 
                 }
             }
             MST += u.Distance;
+            u.explored = true;
         }
 
         int finalPrice = MST * 100000;
@@ -78,8 +84,11 @@ public class AdjacencyGraph {
 class Vertex implements Comparable<Vertex>{
     String name;
     ArrayList<Edge> OutEdges;
-    Integer Distance = Integer.MAX_VALUE;
-    Vertex Predecessor = null;
+    Integer Distance= Integer.MAX_VALUE;
+    Vertex Predecessor=null;
+    boolean explored = false;
+
+
 
     public String getName() {
         return name;
